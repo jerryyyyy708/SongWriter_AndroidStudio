@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 public class Activity_Dialog extends AppCompatDialogFragment {
-    private EditText nActivity;
+    private EditText nActivity,singer,lyricist;
     private Dialog_Listener listener;
     @NonNull
     @Override
@@ -34,10 +34,14 @@ public class Activity_Dialog extends AppCompatDialogFragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String name = nActivity.getText().toString();
-                        listener.applyTexts(name);
+                        String singername = singer.getText().toString();
+                        String lyricistname = lyricist.getText().toString();
+                        listener.applyTexts(name,singername,lyricistname);
                     }
                 });
         nActivity = view.findViewById(R.id.editTextActivity);
+        singer = view.findViewById(R.id.singer_name);
+        lyricist = view.findViewById(R.id.lyricist_name);
         return builder.create();
     }
 
@@ -48,6 +52,6 @@ public class Activity_Dialog extends AppCompatDialogFragment {
     }
 
     public interface Dialog_Listener{
-        void applyTexts(String name);
+        void applyTexts(String name,String singer, String lyricist);
     }
 }

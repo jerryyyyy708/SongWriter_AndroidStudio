@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="250dp">
+    android:layout_height="wrap_content"
+    android:padding="16dp">
 
     <EditText
         android:id="@+id/editTextActivity"
-        android:layout_width="278dp"
-        android:layout_height="59dp"
-        android:ems="10"
-        android:hint="Activity Name"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.371" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_width="match_parent"
+        android:layout_height="57dp"
+        android:hint="Song Name"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/singer_name"
+        android:layout_width="match_parent"
+        android:layout_height="57dp"
+        android:hint="Singer"
+        android:layout_below="@+id/editTextActivity"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/lyricist_name"
+        android:layout_width="match_parent"
+        android:layout_height="57dp"
+        android:hint="Lyricist"
+        android:layout_below="@+id/singer_name"
+        android:inputType="textPersonName" />
+
+</RelativeLayout>
