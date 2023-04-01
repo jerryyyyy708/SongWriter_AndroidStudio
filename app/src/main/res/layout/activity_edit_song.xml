@@ -22,6 +22,7 @@
 
     <EditText
         android:id="@+id/lyrics"
+        android:gravity="top"
         android:layout_width="413dp"
         android:layout_height="686dp"
         android:inputType="textMultiLine"
