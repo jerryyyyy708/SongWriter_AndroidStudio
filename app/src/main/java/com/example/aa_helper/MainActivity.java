@@ -3,11 +3,13 @@ package com.example.aa_helper;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.SharedPreferencesKt;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -51,6 +53,16 @@ public class MainActivity extends AppCompatActivity implements Activity_Dialog.D
         listview = (ListView) findViewById(R.id.Activity_List);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.activity_list_view,R.id.song_text,song_list);
         listview.setAdapter(arrayAdapter);
+        //song list onclick
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(MainActivity.this,EditSong.class);
+                String selected_song = (String) adapterView.getItemAtPosition(i);
+                intent.putExtra("song",selected_song);
+                startActivity(intent);
+            }
+        });
 
         //set button
         add_trip = findViewById(R.id.Add_Trip);
@@ -65,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements Activity_Dialog.D
         SharedPreferences pref = getSharedPreferences("prefs",MODE_PRIVATE);
         boolean firstStart = pref.getBoolean("firstStart",true);
         if(firstStart){
-            song_list.add("Song1");
+            //query add default
             SharedPreferences.Editor editor = pref.edit();
             editor.putBoolean("firstStart",false);
             editor.apply();

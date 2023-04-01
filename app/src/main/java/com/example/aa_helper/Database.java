@@ -63,6 +63,21 @@ class Database extends SQLiteOpenHelper {
             Toast.makeText(context, "Failed",Toast.LENGTH_SHORT).show();
         }
     }
+    void update_lyrics(String sname, String lyrics){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + TABLE_NAME + " SET " + COLUMN_LYRICS + " = '" + lyrics + "' WHERE " + COLUMN_TITLE + " = '" + sname + "'";
+        db.execSQL(query);
+    }
+
+    Cursor get_song(String sname){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TITLE + " = '" + sname + "'";
+        Cursor cursor = null;
+        if(db!=null){
+            cursor = db.rawQuery(query,null);
+        }
+        return cursor;
+    }
 
     Cursor read_db(){
         String query = "SELECT * FROM " + TABLE_NAME;
