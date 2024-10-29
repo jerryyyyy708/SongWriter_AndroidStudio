@@ -29,15 +29,28 @@ public class MainActivity extends AppCompatActivity implements Activity_Dialog.D
     ArrayList<String> lyricist_list = new ArrayList<String>();
     ListView listview;
     @Override
-    public void applyTexts(String name, String singer, String lyricist) {
-        if(name.length()==0) {
-            Toast.makeText(MainActivity.this, "Empty Name!", Toast.LENGTH_LONG).show();
+    public void applyTexts(String originalName, String newName, String singer, String lyricist) {
+        Cursor cursor = db.get_song(originalName);
+        if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst()) {
+            // 更新歌曲資料
+            db.updateSong(originalName, newName, singer, lyricist);
+            Toast.makeText(this, "Song updated!", Toast.LENGTH_SHORT).show();
+        } else {
+            // 新增歌曲
+            db.addSong(newName, singer, lyricist);
+            Toast.makeText(this, "Song added!", Toast.LENGTH_SHORT).show();
         }
-        else {
-            Database db = new Database(MainActivity.this);
-            db.addSong(name,singer,lyricist);
-            store_data();
+        store_data();
+        if (cursor != null) {
+            cursor.close();
         }
+    }
+
+
+    public void openDialogWithData(String song, String singer, String lyricist) {
+        Activity_Dialog dialog = new Activity_Dialog();
+        dialog.setInitialValues(song, singer, lyricist);
+        dialog.show(getSupportFragmentManager(), "Edit Song");
     }
 
     //int click = 0;
@@ -46,13 +59,13 @@ public class MainActivity extends AppCompatActivity implements Activity_Dialog.D
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //song list creation
+        listview = (ListView) findViewById(R.id.Activity_List);
+
         //database creation
         db = new Database(MainActivity.this);
         store_data();
-        //song list creation
-        listview = (ListView) findViewById(R.id.Activity_List);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.activity_list_view,R.id.song_text,song_list);
-        listview.setAdapter(arrayAdapter);
+
         //song list onclick
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -62,6 +75,15 @@ public class MainActivity extends AppCompatActivity implements Activity_Dialog.D
                 intent.putExtra("song",selected_song);
                 startActivity(intent);
             }
+        });
+
+        listview.setOnItemLongClickListener((parent, view, position, id) -> {
+            String selectedSong = song_list.get(position);
+            String selectedSinger = singer_list.get(position);
+            String selectedLyricist = lyricist_list.get(position);
+
+            openDialogWithData(selectedSong, selectedSinger, selectedLyricist);
+            return true;
         });
 
         //set button
@@ -85,23 +107,23 @@ public class MainActivity extends AppCompatActivity implements Activity_Dialog.D
     }
     public void openDialog() {
         Activity_Dialog new_activity = new Activity_Dialog();
-        new_activity.show(getSupportFragmentManager(),"New Activity");
+        new_activity.show(getSupportFragmentManager(),"New Song");
     }
 
-    void store_data(){
+    void store_data() {
         Cursor cursor = db.read_db();
-        song_list = new ArrayList<String>();
-        singer_list = new ArrayList<String>();
-        lyricist_list = new ArrayList<String>();
-        while(cursor.moveToNext()){
-            listview = (ListView) findViewById(R.id.Activity_List);
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.activity_list_view,R.id.song_text,song_list);
-            listview.setAdapter(arrayAdapter);
-            Log.d("DB",cursor.getString(1));
-            song_list.add(cursor.getString(1));
-            singer_list.add(cursor.getString(2));
-            lyricist_list.add(cursor.getString(3));
+        song_list = new ArrayList<>();
+        singer_list = new ArrayList<>();
+        lyricist_list = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            song_list.add(cursor.getString(1));  // 歌曲名稱
+            singer_list.add(cursor.getString(2));  // 歌手名稱
+            lyricist_list.add(cursor.getString(3));  // 作詞者名稱
         }
+
+        SongAdapter songAdapter = new SongAdapter(this, song_list, singer_list);
+        listview.setAdapter(songAdapter);
     }
 
 }

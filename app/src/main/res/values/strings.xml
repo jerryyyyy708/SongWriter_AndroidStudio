@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">AA_helper</string>
-    <string name="add_message">add new trip</string>
+    <string name="app_name">Song Writer</string>
+    <string name="add_message">add new song</string>
+    <string name="delete_song">Delete Song</string>
 </resources>

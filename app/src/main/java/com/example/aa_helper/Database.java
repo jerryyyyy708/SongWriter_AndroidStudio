@@ -69,6 +69,21 @@ class Database extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
+    void updateSong(String originalName, String newName, String newSinger, String newLyricist) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_TITLE, newName);
+        cv.put(COLUMN_SINGER, newSinger);
+        cv.put(COLUMN_LYRICIST, newLyricist);
+
+        db.update(TABLE_NAME, cv, COLUMN_TITLE + " = ?", new String[]{originalName});
+    }
+
+    void delete_song(String songTitle) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, COLUMN_TITLE + " = ?", new String[]{songTitle});
+    }
+
     Cursor get_song(String sname){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TITLE + " = '" + sname + "'";
