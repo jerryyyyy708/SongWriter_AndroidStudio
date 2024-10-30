@@ -84,6 +84,20 @@ class Database extends SQLiteOpenHelper {
         db.delete(TABLE_NAME, COLUMN_TITLE + " = ?", new String[]{songTitle});
     }
 
+    Cursor getSongsBySinger(String singer) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_SINGER + " = ?";
+        return db.rawQuery(query, new String[]{singer});
+    }
+
+
+    Cursor getAllSingers() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT DISTINCT " + COLUMN_SINGER + " FROM " + TABLE_NAME;
+        return db.rawQuery(query, null);
+    }
+
+
     Cursor get_song(String sname){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_TITLE + " = '" + sname + "'";

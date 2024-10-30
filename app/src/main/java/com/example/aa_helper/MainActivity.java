@@ -12,10 +12,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -59,11 +61,54 @@ public class MainActivity extends AppCompatActivity implements Activity_Dialog.D
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 設置 Toolbar 為 ActionBar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         //song list creation
         listview = (ListView) findViewById(R.id.Activity_List);
 
         //database creation
         db = new Database(MainActivity.this);
+
+        // 初始化 Spinner
+        Spinner singerSpinner = findViewById(R.id.singer_spinner);
+        ArrayList<String> singerOptions = new ArrayList<>();
+        singerOptions.add("All"); // 添加 "All" 選項
+
+        // 獲取資料庫中的歌手列表並添加到選項
+        Cursor singerCursor = db.getAllSingers();
+        while (singerCursor.moveToNext()) {
+            String singerName = singerCursor.getString(0);
+            if (!singerOptions.contains(singerName)) {
+                singerOptions.add(singerName);
+            }
+        }
+        singerCursor.close();
+
+        // 設置 Spinner 的 Adapter
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, singerOptions);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        singerSpinner.setAdapter(spinnerAdapter);
+
+        // 設置 Spinner 的選擇事件
+        singerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedSinger = singerOptions.get(position);
+                if (selectedSinger.equals("All")) {
+                    store_data(); // 顯示所有歌曲
+                } else {
+                    filterDataBySinger(selectedSinger); // 根據歌手篩選歌曲
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
         store_data();
 
         //song list onclick
@@ -108,6 +153,23 @@ public class MainActivity extends AppCompatActivity implements Activity_Dialog.D
     public void openDialog() {
         Activity_Dialog new_activity = new Activity_Dialog();
         new_activity.show(getSupportFragmentManager(),"New Song");
+    }
+
+    void filterDataBySinger(String singer) {
+        Cursor cursor = db.getSongsBySinger(singer);
+        song_list.clear();
+        singer_list.clear();
+        lyricist_list.clear();
+
+        while (cursor.moveToNext()) {
+            song_list.add(cursor.getString(1));  // 歌曲名稱
+            singer_list.add(cursor.getString(2));  // 歌手名稱
+            lyricist_list.add(cursor.getString(3));  // 作詞者名稱
+        }
+        cursor.close();
+
+        SongAdapter songAdapter = new SongAdapter(this, song_list, singer_list);
+        listview.setAdapter(songAdapter);
     }
 
     void store_data() {
